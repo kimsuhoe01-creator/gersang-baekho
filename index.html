@@ -45,7 +45,7 @@
   .hero h1{font-size:clamp(32px,6vw,54px);font-weight:900;letter-spacing:-.045em;margin:18px 0 12px;line-height:1.05}
   .hero h1 .gr{background:linear-gradient(120deg,var(--el2),var(--el));-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero p{max-width:560px;margin:0 auto;color:var(--sub);font-size:15.5px}
-  .cards{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:38px 0 30px}
+  .cards{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:38px auto 30px}
   .card{flex:1 1 290px;max-width:320px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
   .card:hover{border-color:var(--line2);transform:translateY(-3px)}
   .card .ic{font-size:28px}
@@ -455,19 +455,19 @@ const WANG={
   damun:{ nm:"다문천왕", ic:"❄️", el:"빙결", stat:"지력", skill:"눈사태", trait:"집중", mob:"지상몹피해",
     tc:"#3fc8ff", tc2:"#8be6ff", deep:"#0c2f42", glow:"rgba(63,200,255,.45)",
     fdesc:"(지력×28 + 공격력×15 + 렙×15) × 2타", base:(m,a,l)=>(m*28+a*15+l*15)*2,
-    rows:[["서릿발한자루",260,175,1562000],["북천다문",260,160,1352000],["얼음군주",259,148,1184000],["한설야",260,132,960000],["물빛검객",260,118,764000],["설한풍",259,95,443000],["겨울다문(예시)",260,77,152900,true],["빙하연가",260,68,64200],["초빙",258,45,38900]]},
+    rows:[]},
   gwangmok:{ nm:"광목천왕", ic:"🍃", el:"질풍", stat:"생명력", skill:"풍룡섬", trait:"광풍", mob:"지상몹피해",
     tc:"#2ee6a6", tc2:"#7bffcf", deep:"#0c3a2e", glow:"rgba(46,230,166,.42)",
     fdesc:"(생명×28 + 공격력×15 + 렙×15) × 3타", base:(m,a,l)=>(m*28+a*15+l*15)*3,
-    rows:[["태풍의눈",260,180,1690000],["질풍광목",260,165,1452000],["바람길잡이",260,150,1236000],["청람풍",260,130,948000],["서방수호신",259,110,712000],["미풍세월",259,88,408000],["광목충신",260,60,92000],["산들바람",257,42,41000]]},
+    rows:[]},
   jeungjang:{ nm:"증장천왕", ic:"⚡", el:"뇌전", stat:"민첩", skill:"뇌룡격", trait:"감전", mob:"공중몹피해",
     tc:"#b07cff", tc2:"#d9b3ff", deep:"#2a1c4a", glow:"rgba(176,124,255,.45)",
     fdesc:"(민첩×12 + 공격력×7 + 렙×10) × 3타", base:(m,a,l)=>(m*12+a*7+l*10)*3,
-    rows:[["뇌제강림",260,172,1498000],["벼락손",260,158,1304000],["남방증장",260,144,1128000],["천둥벌거숭이",260,125,872000],["전격질주",259,105,632000],["뇌명검",258,85,372000],["스파크",260,58,88000],["정전기",256,40,37500]]},
+    rows:[]},
   jiguk:{ nm:"지국천왕", ic:"🔥", el:"화염", stat:"힘", skill:"염룡살진", trait:"겁화", mob:"지상몹피해",
     tc:"#ff6a3d", tc2:"#ffb08a", deep:"#3a1a12", glow:"rgba(255,106,61,.45)",
     fdesc:"(공격력 + 힘 + 렙) × 8 × 5타", base:(m,a,l)=>(a+m+l)*8*5,
-    rows:[["화룡군주",260,178,1642000],["동방지국",260,162,1418000],["불꽃심장",259,150,1218000],["염제무진",260,135,982000],["붉은창",260,115,742000],["화신강림",258,90,426000],["지국대왕",260,62,96000],["불티",257,44,40200]]}
+    rows:[]}
 };
 let CUR="damun";
 function sokPct(s){const b=390;return s>=b?s:s-(b-s)/2;}
@@ -485,11 +485,10 @@ function renderTabs(){
 function renderAll(){
   const w=WANG[CUR]; applyTheme(w);
   const rows=w.rows.map(r=>({nm:r[0],lv:r[1],sok:r[2],sc:r[3],mine:r[4]})).sort((a,b)=>b.sc-a.sc);
-  const max=rows[0].sc;
+  const max=rows.length?rows[0].sc:1;
   $("banner").innerHTML=`<div class="big">${w.ic}</div><div class="txt"><h2><span>${w.nm}</span> 랭킹</h2><p>기본 딜 = ${w.fdesc}</p></div><div class="meta"><div class="n">등록 인원</div><div class="b">${rows.length}명</div></div>`;
-  const [a,b,c]=rows;
   const pc=(x,rank,cls)=>`<div class="pcard ${cls} p${rank}" style="--rankc:${rank===1?'var(--gold)':rank===2?'var(--silver)':'var(--bronze)'}"><div class="medal">${rank}</div><div class="who">${x.nm}</div><div class="lv">LV.${x.lv}</div><div class="score num">${fmt(x.sc)}</div><div class="sok">속성값 ${x.sok}</div></div>`;
-  $("podium").innerHTML=pc(b,2,'')+pc(a,1,'first')+pc(c,3,'');
+  $("podium").innerHTML = rows.length>=3 ? pc(rows[1],2,'')+pc(rows[0],1,'first')+pc(rows[2],3,'') : '';
   $("boardTitle").textContent=`${w.nm} 전체 랭킹`;
   drawRows(rows,max);
   $("calcWang").textContent=w.nm; $("lbMain").textContent=w.stat;
@@ -500,7 +499,7 @@ function renderAll(){
 function drawRows(rows,max){
   const q=($("q").value||"").trim();
   const list=rows.map((x,i)=>({...x,rank:i+1})).filter(x=>!q||x.nm.includes(q));
-  $("rows").innerHTML=list.map(x=>`<div class="row ${x.mine?'mine':''}"><div class="rk">${x.rank}</div><div class="cell-name"><div class="nm">${x.nm}${x.mine?' <span style="color:var(--el);font-size:11px">· 내 캐릭</span>':''}</div><div class="lv">LV.${x.lv}</div></div><div class="cell-score"><div class="s num">${fmt(x.sc)}</div><div class="bar"><i style="width:${Math.max(6,x.sc/max*100)}%"></i></div></div><div class="cell-sok"><div class="sokv num">${x.sok}</div><div class="lbl">속성값</div></div></div>`).join("")||`<div class="row"><div></div><div class="cell-name">검색 결과 없음</div></div>`;
+  $("rows").innerHTML=list.length?list.map(x=>`<div class="row ${x.mine?'mine':''}"><div class="rk">${x.rank}</div><div class="cell-name"><div class="nm">${x.nm}${x.mine?' <span style="color:var(--el);font-size:11px">· 내 캐릭</span>':''}</div><div class="lv">LV.${x.lv}</div></div><div class="cell-score"><div class="s num">${fmt(x.sc)}</div><div class="bar"><i style="width:${Math.max(6,x.sc/max*100)}%"></i></div></div><div class="cell-sok"><div class="sokv num">${x.sok}</div><div class="lbl">속성값</div></div></div>`).join(""):`<div style="padding:38px 18px;text-align:center;color:var(--sub)">${rows.length?'검색 결과가 없어요.':'아직 등록된 캐릭터가 없어요. 계산기로 내 점수를 뽑아 첫 주인공이 되어보세요!'}</div>`;
 }
 function setWang(k){CUR=k;renderTabs();renderAll();}
 function runCalc(){
@@ -509,7 +508,7 @@ function runCalc(){
   const r=calcSteps(w,main,atk,lv,sok,cr,mob);
   $("outScore").textContent=fmt(r.fin);
   const rows=w.rows.map(x=>x[3]).sort((a,b)=>b-a); let rank=1; for(const s of rows){if(r.fin<s)rank++;}
-  $("outRank").textContent=`${rank}위`; $("outOf").textContent=`/ ${rows.length+1}명 중`;
+  $("outRank").textContent=`${rank}위`; $("outOf").textContent=rows.length?`/ ${rows.length+1}명 중`:'· 아직 등록자 없음';
   const x2=n=>'×'+n.toFixed(2);
   $("bd").innerHTML=`<div class="bstep"><span>${w.skill} 기본 <em>${w.fdesc}</em></span><b class="num">${fmt(r.base)}</b></div><div class="bstep"><span>× 치명 ${cr}% <em>${x2(r.cf)} · 크리 3배</em></span><b class="num">${fmt(r.s2)}</b></div><div class="bstep"><span>× ${w.mob} ${mob}% <em>${x2(r.mf)}</em></span><b class="num">${fmt(r.s3)}</b></div><div class="bstep hi"><span>× 속성보정 <em>속값 ${sok} vs 야주타 390 → ${r.sp>=0?'+':''}${r.sp.toFixed(1)}% (${x2(r.sf)})</em></span><b class="num">${fmt(r.fin)}</b></div>`;
 }
@@ -577,40 +576,20 @@ function renderGal(){
 wireChips('#gcat',renderGal);
 
 /* ══ 게시판 ══ */
-const BOARD=[
-  {c:"공략",t:"각성 다문 특성 트리 총정리 (집중·안식 세팅)",by:"얼음군주",d:"8/15",v:1842,cm:37,hot:true},
-  {c:"상단원모집",t:"야주타 파티 구합니다 — 백호 21시 고정",by:"북천다문",d:"8/15",v:412,cm:12},
-  {c:"잡담",t:"천왕 순수 전투력 랭킹 써봤는데 진짜 신기하네ㅋㅋ",by:"서릿발한자루",d:"8/15",v:967,cm:28,hot:true},
-  {c:"질문",t:"속값 어디까지 올리는 게 가성비임?",by:"물빛검객",d:"8/14",v:734,cm:41},
-  {c:"공략",t:"지국천왕 겁화 5렙 vs 화상 세팅 딜 비교",by:"화룡군주",d:"8/14",v:588,cm:19},
-  {c:"상단원모집",t:"백호 초보 문파원 모집합니다 (활동 위주)",by:"백호지기",d:"8/14",v:326,cm:8},
-  {c:"잡담",t:"오늘 유기전 시세 왜 이렇게 올랐냐",by:"돼지고기상인",d:"8/13",v:445,cm:15},
-  {c:"질문",t:"증장 감전이랑 충격 뭐부터 찍음?",by:"뇌명검",d:"8/13",v:381,cm:22},
-  {c:"공략",t:"광목천왕 생명력 세팅 끝판왕 가이드",by:"태풍의눈",d:"8/12",v:1123,cm:31,hot:true},
-  {c:"잡담",t:"백호 서버 인구 요즘 좀 늘어난 듯?",by:"산들바람",d:"8/12",v:502,cm:17}
-];
+const BOARD=[];
 function renderBoard(){
   const cat=(document.querySelector('#bcat .chip.on')||{dataset:{cat:'전체'}}).dataset.cat;
   const l=BOARD.filter(x=>cat==='전체'||x.c===cat);
-  $("postList").innerHTML=l.map(x=>`<div class="post-row" onclick="mock('게시글 보기는 곧 열립니다 💬')"><div class="cat-badge cat-${x.c}">${x.c}</div><div class="pt">${x.hot?'<span class="hot">HOT</span>':''}${x.t}<span class="cm">[${x.cm}]</span></div><div class="by">${x.by}</div><div class="dt">${x.d}</div><div class="vw">👁 ${x.v}</div></div>`).join("");
+  $("postList").innerHTML=l.map(x=>`<div class="post-row" onclick="mock('게시글 보기는 곧 열립니다 💬')"><div class="cat-badge cat-${x.c}">${x.c}</div><div class="pt">${x.hot?'<span class="hot">HOT</span>':''}${x.t}<span class="cm">[${x.cm}]</span></div><div class="by">${x.by}</div><div class="dt">${x.d}</div><div class="vw">👁 ${x.v}</div></div>`).join("")||`<div style="padding:44px;text-align:center;color:var(--sub)">아직 글이 없어요. 첫 글을 남겨보세요!</div>`;
 }
 wireChips('#bcat',renderBoard);
 
 /* ══ 거래장터 ══ */
-const MKT=[
-  {ty:"팝니다",it:"백호갑옷 팝니다",pr:"1.3억",by:"북천다문",d:"8/15",s:"거래중"},
-  {ty:"삽니다",it:"장팔사모 삽니다",pr:"150만",by:"얼음군주",d:"8/15",s:"거래중"},
-  {ty:"팝니다",it:"산삼 100개 일괄",pr:"250만",by:"산삼왕",d:"8/15",s:"거래중"},
-  {ty:"팝니다",it:"각성 천왕비 (지력)",pr:"제시",by:"화룡군주",d:"8/14",s:"거래중"},
-  {ty:"삽니다",it:"호피 대량 구합니다",pr:"개당 30만",by:"백호지기",d:"8/14",s:"완료"},
-  {ty:"팝니다",it:"남대단철장갑",pr:"40만",by:"벼락손",d:"8/13",s:"거래중"},
-  {ty:"삽니다",it:"고급 속성템 삽니다",pr:"제시",by:"서릿발한자루",d:"8/13",s:"거래중"},
-  {ty:"팝니다",it:"비단신 x5",pr:"개당 2만",by:"미풍세월",d:"8/12",s:"완료"}
-];
+const MKT=[];
 function renderMkt(){
   const cat=(document.querySelector('#mcat .chip.on')||{dataset:{cat:'전체'}}).dataset.cat;
   const l=MKT.filter(x=>cat==='전체'||x.ty===cat);
-  $("mktList").innerHTML=l.map(x=>`<div class="mkt-row" onclick="mock('거래글 보기는 곧 열립니다 🤝')"><div class="tbadge t-${x.ty}">${x.ty}</div><div class="it">${x.it}</div><div class="pr">${x.pr}</div><div class="by">${x.by} · ${x.d}</div><div class="st ${x.s==='완료'?'done':'live'}">${x.s}</div></div>`).join("");
+  $("mktList").innerHTML=l.map(x=>`<div class="mkt-row" onclick="mock('거래글 보기는 곧 열립니다 🤝')"><div class="tbadge t-${x.ty}">${x.ty}</div><div class="it">${x.it}</div><div class="pr">${x.pr}</div><div class="by">${x.by} · ${x.d}</div><div class="st ${x.s==='완료'?'done':'live'}">${x.s}</div></div>`).join("")||`<div style="padding:44px;text-align:center;color:var(--sub)">아직 등록된 거래가 없어요. 첫 거래를 올려보세요!</div>`;
 }
 wireChips('#mcat',renderMkt);
 
