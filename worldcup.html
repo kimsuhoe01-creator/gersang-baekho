@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>거상 여캐 이상형 월드컵 — 거상 백호 사랑방</title>
+<meta name="description" content="거상 여성 캐릭터 208명 중 랜덤 64명으로 진행하는 이상형 월드컵. 64강부터 결승까지.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="common.css">
+<style>
+  body { padding-bottom:24px; }  /* 이 페이지는 비영리 운영 원칙에 따라 광고를 두지 않는다 */
+  .glow { position:absolute; inset:0 0 auto 0; height:560px; z-index:-1; pointer-events:none;
+          background:radial-gradient(55% 55% at 50% 0%,rgba(255,122,26,.15),transparent 70%); }
+  main { max-width:980px; margin:0 auto; padding:0 16px; }
+
+  /* 시작 화면 */
+  .intro { padding:64px 0 40px; text-align:center; }
+  .intro h1 { margin:0 0 12px; font-size:clamp(30px,5.5vw,50px); font-weight:900; letter-spacing:-.03em; line-height:1.15; }
+  .intro h1 em { font-style:normal; background:linear-gradient(120deg,var(--acc2),var(--acc) 60%,#ff5a1a); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .intro p { margin:0 auto 28px; max-width:520px; color:var(--tx2); word-break:keep-all; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; height:52px; padding:0 30px; font:inherit; font-weight:800; font-size:17px; border:0; border-radius:14px; cursor:pointer; transition:transform .12s, filter .15s; }
+  .btn.pri { color:#160a02; background:linear-gradient(135deg,var(--acc2),var(--acc)); box-shadow:0 12px 30px -12px rgba(255,122,26,.6); }
+  .btn.sec { color:var(--tx); background:var(--panel2); border:1px solid var(--line2); }
+  .btn:hover { filter:brightness(1.08); } .btn:active { transform:scale(.97); }
+  .faces { display:flex; justify-content:center; margin:0 auto 30px; }
+  .faces img { width:72px; height:72px; margin:0 -8px; border-radius:50%; background:var(--panel2); border:2px solid var(--bg); object-fit:cover; }
+
+  /* 진행 화면 */
+  .top { padding:28px 0 18px; text-align:center; }
+  .round { font-size:clamp(22px,4vw,30px); font-weight:900; letter-spacing:-.02em; }
+  .round b { color:var(--acc2); }
+  .hint { margin-top:2px; color:var(--tx3); font-size:13px; }
+  .bar { height:4px; max-width:420px; margin:14px auto 0; border-radius:4px; background:var(--line); overflow:hidden; }
+  .bar i { display:block; height:100%; width:0; border-radius:4px; background:linear-gradient(90deg,var(--acc),var(--acc2)); transition:width .35s ease; }
+
+  .arena { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:stretch; }
+  .vs { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:3; display:grid; place-items:center; width:58px; height:58px; border-radius:50%;
+        font-weight:900; font-size:18px; color:#160a02; background:linear-gradient(135deg,var(--acc2),var(--acc)); border:4px solid var(--bg); box-shadow:0 8px 24px rgba(0,0,0,.6); }
+  .pick { position:relative; display:flex; flex-direction:column; align-items:center; padding:26px 16px 22px; font:inherit; color:inherit; text-align:center; cursor:pointer;
+          background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line2); border-radius:22px; overflow:hidden;
+          transition:transform .18s ease, border-color .18s, box-shadow .18s, opacity .3s; -webkit-tap-highlight-color:transparent; }
+  .pick::before { content:""; position:absolute; inset:0; background:radial-gradient(70% 55% at 50% 38%,rgba(255,160,77,.13),transparent 70%); opacity:0; transition:opacity .2s; }
+  @media (hover:hover) { .pick:hover { transform:translateY(-4px); border-color:var(--acc); box-shadow:0 24px 50px -24px rgba(255,122,26,.55); } .pick:hover::before { opacity:1; } }
+  .pick:focus-visible { outline:3px solid var(--acc); outline-offset:3px; }
+  .pick img { position:relative; width:min(100%,320px); aspect-ratio:1; object-fit:contain; border-radius:18px; box-shadow:0 14px 30px -10px rgba(0,0,0,.7); user-select:none; -webkit-user-drag:none; pointer-events:none; }
+  .pick .nm { position:relative; margin-top:14px; font-size:clamp(18px,3vw,24px); font-weight:800; letter-spacing:-.01em; word-break:keep-all; }
+  .pick.win { transform:scale(1.03); border-color:var(--acc); box-shadow:0 0 0 3px var(--accdim), 0 30px 60px -24px rgba(255,122,26,.7); }
+  .pick.win::before { opacity:1; }
+  .pick.lose { opacity:.18; transform:scale(.95); }
+  .arena.lock .pick { pointer-events:none; }
+  .arena.enter .pick { animation:rise .32s ease both; } .arena.enter .pick:nth-child(3) { animation-delay:.05s; }
+  @keyframes rise { from { opacity:0; transform:translateY(14px); } }
+
+  @media (max-width:640px), (orientation:portrait) and (max-width:820px) {
+    .arena { grid-template-columns:1fr; gap:14px; }
+    .pick { flex-direction:row; gap:16px; padding:14px 18px; text-align:left; border-radius:18px; }
+    .pick img { width:min(38vw,150px); }
+    .pick .nm { margin-top:0; flex:1; }
+    .vs { width:46px; height:46px; font-size:15px; }
+    .top { padding:18px 0 14px; }
+  }
+
+  /* 우승 화면 */
+  .champ { padding:36px 0 30px; text-align:center; }
+  .crown { font-size:44px; line-height:1; animation:pop .5s cubic-bezier(.2,1.6,.4,1) both; }
+  @keyframes pop { from { transform:scale(0) rotate(-20deg); } }
+  .champ h2 { margin:8px 0 4px; font-size:15px; font-weight:700; color:var(--acc2); letter-spacing:.12em; }
+  .champ .name { font-size:clamp(30px,6vw,48px); font-weight:900; letter-spacing:-.03em; }
+  .champ .photo { position:relative; width:min(78vw,340px); margin:18px auto 22px; padding:18px; border-radius:28px; background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--acc);
+                  box-shadow:0 0 0 4px var(--accdim), 0 40px 80px -30px rgba(255,122,26,.6); }
+  .champ .photo img { width:100%; aspect-ratio:1; object-fit:contain; border-radius:16px; pointer-events:none; user-select:none; }
+  .actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .podium { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:30px; }
+  .podium .p { display:flex; align-items:center; gap:10px; padding:8px 16px 8px 8px; background:var(--bg2); border:1px solid var(--line); border-radius:999px; font-size:14px; }
+  .podium .p img { width:40px; height:40px; border-radius:50%; background:var(--panel2); object-fit:cover; }
+  .podium .p span { color:var(--tx3); font-size:12px; margin-right:2px; }
+
+  .legal { margin:48px 0 0; padding:16px 18px; font-size:12px; line-height:1.8; color:var(--tx3); background:var(--bg2); border:1px solid var(--line); border-radius:var(--rs); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="site-head"><div class="wrap">
+  <a class="logo" href="index.html"><span class="mark">白</span>거상 백호 사랑방</a>
+  <nav class="gnb">
+    <a href="index.html">AI 질문</a>
+    <a href="worldcup.html" class="on">이상형 월드컵</a>
+    <a href="gallery.html">갤러리</a>
+    <a href="board.html">자유게시판</a>
+  </nav>
+</div></header>
+
+<main>
+  <!-- 시작 -->
+  <section class="intro" id="intro">
+    <div class="faces" id="faces"></div>
+    <h1>거상 여캐 <em>이상형 월드컵</em></h1>
+    <p>여성 캐릭터 <b id="total">208</b>명 중 매번 다른 64명이 나옵니다. 64강부터 결승까지, 더 마음에 드는 쪽을 골라 주세요.</p>
+    <button class="btn pri" id="start" disabled>불러오는 중…</button>
+  </section>
+
+  <!-- 진행 -->
+  <section id="game" hidden>
+    <div class="top">
+      <div class="round" id="round"></div>
+      <div class="hint">더 마음에 드는 쪽을 누르세요 · 키보드 ← →</div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <div class="arena" id="arena">
+      <button class="pick" id="left"><img alt="" draggable="false"><div class="nm"></div></button>
+      <div class="vs">VS</div>
+      <button class="pick" id="right"><img alt="" draggable="false"><div class="nm"></div></button>
+    </div>
+  </section>
+
+  <!-- 우승 -->
+  <section class="champ" id="champ" hidden>
+    <div class="crown">👑</div>
+    <h2>나의 이상형 우승</h2>
+    <div class="name" id="champName"></div>
+    <div class="photo"><img id="champImg" alt="" draggable="false"></div>
+    <div class="actions">
+      <button class="btn pri" id="again">다시하기</button>
+      <button class="btn sec" id="save">결과 이미지 저장</button>
+    </div>
+    <div class="podium" id="podium"></div>
+  </section>
+
+  <div class="legal">
+    본 페이지에 사용된 캐릭터 이미지의 저작권은 <b>AK인터랙티브</b>(천하제일상 거상)에 있으며, 이 페이지는 팬이 만든 비공식·비영리 페이지입니다. 이 페이지에는 광고를 싣지 않습니다.
+    권리자의 요청이 있으면 즉시 내리겠습니다. 캐릭터 이름은 게임 데이터에서 자동으로 뽑아 일부 틀릴 수 있습니다.
+  </div>
+</main>
+
+<footer style="margin-top:32px"><div class="wrap">거상 백호 사랑방은 천하제일상 거상의 팬 사이트이며 게임사와 무관합니다.</div></footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const ROUND_NAMES = {64:"64강", 32:"32강", 16:"16강", 8:"8강", 4:"4강", 2:"결승"};
+const src = c => "portraits/" + c.file;
+let ALL = [], players = [], winners = [], matchNo = 0, semis = [], finalLoser = null, busy = false;
+
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function show(id) { for (const s of ["intro", "game", "champ"]) $(s).hidden = s !== id; window.scrollTo({top:0}); }
+function preload(list) { list.forEach(c => { if (c) new Image().src = src(c); }); }
+
+function startGame() {
+  players = shuffle([...ALL]).slice(0, 64);   // 매 판마다 208명 중 랜덤 64명
+  winners = []; matchNo = 0; semis = []; finalLoser = null;
+  show("game"); draw();
+}
+
+function draw() {
+  const size = players.length, total = size / 2;
+  const a = players[matchNo * 2], b = players[matchNo * 2 + 1];
+  $("round").innerHTML = size === 2 ? "<b>결승</b>" : `<b>${ROUND_NAMES[size]}</b> ${matchNo + 1}/${total}`;
+  // 전체 63경기 중 몇 경기를 치렀는지
+  const played = (64 - size) + matchNo;
+  $("bar").style.width = (played / 63 * 100) + "%";
+  for (const [el, c] of [[$("left"), a], [$("right"), b]]) {
+    el.className = "pick";
+    el.querySelector("img").src = src(c);
+    el.querySelector("img").alt = c.name;
+    el.querySelector(".nm").textContent = c.name;
+  }
+  const arena = $("arena");
+  arena.classList.remove("lock", "enter"); void arena.offsetWidth; arena.classList.add("enter");
+  preload([players[matchNo * 2 + 2], players[matchNo * 2 + 3]]);
+  busy = false;
+}
+
+function choose(side) {
+  if (busy || $("game").hidden) return;
+  busy = true;
+  const a = players[matchNo * 2], b = players[matchNo * 2 + 1];
+  const win = side === "left" ? a : b, lose = side === "left" ? b : a;
+  $("arena").classList.add("lock");
+  $(side).classList.add("win");
+  $(side === "left" ? "right" : "left").classList.add("lose");
+  if (players.length === 4) semis.push(lose);
+  if (players.length === 2) finalLoser = lose;
+  winners.push(win);
+  setTimeout(() => {
+    matchNo++;
+    if (matchNo * 2 >= players.length) { players = winners; winners = []; matchNo = 0; }
+    if (players.length === 1) finish(players[0]); else draw();
+  }, 520);
+}
+
+function finish(champ) {
+  $("champName").textContent = champ.name;
+  $("champImg").src = src(champ); $("champImg").alt = champ.name;
+  const row = (label, c) => `<div class="p"><img src="${src(c)}" alt=""><span>${label}</span>${c.name.replace(/[&<>]/g, "")}</div>`;
+  $("podium").innerHTML = (finalLoser ? row("준우승", finalLoser) : "") + semis.map(c => row("4강", c)).join("");
+  $("save").dataset.id = champ.id;
+  show("champ");
+}
+
+// 결과 카드 한 장을 그려서 저장한다 (원본 이미지를 그대로 내려받게 하지는 않는다)
+function saveCard() {
+  const champ = ALL.find(c => c.id === $("save").dataset.id);
+  const img = $("champImg"), W = 720, H = 900;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const g = cv.getContext("2d");
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#1b1208"); bg.addColorStop(.45, "#0f1116"); bg.addColorStop(1, "#0b0c0f");
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const glow = g.createRadialGradient(W / 2, 360, 20, W / 2, 360, 380); glow.addColorStop(0, "rgba(255,122,26,.30)"); glow.addColorStop(1, "rgba(255,122,26,0)");
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  g.textAlign = "center"; g.fillStyle = "#ffa04d"; g.font = "700 26px Pretendard, sans-serif";
+  g.fillText("거상 여캐 이상형 월드컵 · 우승", W / 2, 84);
+  g.drawImage(img, (W - 480) / 2, 130, 480, 480);
+  g.fillStyle = "#ffffff"; g.font = "900 64px Pretendard, sans-serif"; g.fillText(champ.name, W / 2, 700);
+  if (finalLoser) { g.fillStyle = "#98a0ae"; g.font = "500 26px Pretendard, sans-serif"; g.fillText("준우승  " + finalLoser.name, W / 2, 756); }
+  g.fillStyle = "#69707d"; g.font = "500 22px Pretendard, sans-serif"; g.fillText("dabangzz.com · 이미지 ⓒ AK인터랙티브", W / 2, 850);
+  const a = document.createElement("a");
+  a.download = "거상_이상형월드컵_" + champ.name + ".png"; a.href = cv.toDataURL("image/png"); a.click();
+}
+
+$("left").addEventListener("click", () => choose("left"));
+$("right").addEventListener("click", () => choose("right"));
+$("start").addEventListener("click", startGame);
+$("again").addEventListener("click", startGame);
+$("save").addEventListener("click", saveCard);
+document.addEventListener("keydown", e => { if (e.key === "ArrowLeft") choose("left"); if (e.key === "ArrowRight") choose("right"); });
+document.addEventListener("contextmenu", e => { if (e.target.tagName === "IMG") e.preventDefault(); });
+
+fetch("portraits/manifest.json").then(r => r.json()).then(list => {
+  ALL = list;
+  $("total").textContent = list.length;
+  $("faces").innerHTML = shuffle([...list]).slice(0, 5).map(c => `<img src="${src(c)}" alt="">`).join("");
+  const b = $("start"); b.disabled = false; b.textContent = "64강 시작하기";
+}).catch(() => { $("start").textContent = "목록을 불러오지 못했습니다"; });
+</script>
+</body>
+</html>
