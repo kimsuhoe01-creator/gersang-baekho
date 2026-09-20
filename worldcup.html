@@ -279,7 +279,7 @@ function choose(side) {
     matchNo++;
     if (matchNo * 2 < players.length) { draw(); return; }
     // 한 라운드가 끝났다
-    players = winners; winners = []; matchNo = 0;
+    players = shuffle(winners); winners = []; matchNo = 0;   // 다음 라운드는 대진을 새로 섞는다
     if (players.length === 1) finish(players[0]); else roundBreak();
   }, 760);
 }
