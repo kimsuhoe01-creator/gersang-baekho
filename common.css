@@ -1,31 +1,42 @@
 /* 거상 백호 사랑방 공통 스타일: 색상 토큰, 헤더, 광고 자리, 푸터. 모든 페이지가 함께 쓴다. */
-  :root {
-    --bg:#0b0c0f; --bg2:#101218; --panel:#15181f; --panel2:#1b1f28; --plate:#0e1116;
-    --line:#252a35; --line2:#333a48;
-    --tx:#e7eaf0; --tx2:#98a0ae; --tx3:#69707d;
-    --acc:#ff7a1a; --acc2:#ffa04d; --accdim:rgba(255,122,26,.14);
-    --ok:#3ecf8e; --warn:#ffc95c; --bad:#ff5f56;
-    --r:14px; --rs:10px;
-  }
-  * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--tx); padding-bottom:84px;
-         font:16px/1.7 Pretendard,"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif; }
-  a { color:inherit; }
-  .wrap { max-width:1180px; margin:0 auto; padding:0 16px; }
+:root {
+  --bg:#0b0c0f; --bg2:#101218; --panel:#15181f; --panel2:#1b1f28; --plate:#0e1116;
+  --line:#252a35; --line2:#333a48;
+  --tx:#e7eaf0; --tx2:#98a0ae; --tx3:#69707d;
+  --acc:#ff7a1a; --acc2:#ffa04d; --accdim:rgba(255,122,26,.14);
+  --ok:#3ecf8e; --warn:#ffc95c; --bad:#ff5f56;
+  --r:14px; --rs:10px;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { margin:0; background:var(--bg); color:var(--tx); padding-bottom:96px;
+       font:16px/1.7 Pretendard,"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+       -webkit-font-smoothing:antialiased; }
+a { color:inherit; }
+.wrap { max-width:1180px; margin:0 auto; padding:0 16px; }
 
-  /* 공통 헤더 (사랑방 전 페이지 동일 마크업) */
-  .site-head { position:sticky; top:0; z-index:60; background:rgba(11,12,15,.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-  .site-head .wrap { display:flex; align-items:center; gap:24px; height:58px; }
-  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; text-decoration:none; white-space:nowrap; }
-  .logo .mark { display:grid; place-items:center; width:30px; height:30px; border-radius:8px; background:var(--acc); color:#0b0c0f; font-weight:900; }
-  .gnb { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; }
-  .gnb::-webkit-scrollbar { display:none; }
-  .gnb a { padding:8px 14px; border-radius:var(--rs); color:var(--tx2); text-decoration:none; font-weight:600; font-size:15px; white-space:nowrap; }
-  .gnb a:hover { color:var(--tx); background:var(--panel); }
-  .gnb a.on { color:var(--acc2); background:var(--accdim); }
+/* 공통 헤더 (사랑방 전 페이지 동일 마크업) */
+.site-head { position:sticky; top:0; z-index:60; background:rgba(11,12,15,.82); backdrop-filter:blur(14px) saturate(1.4); border-bottom:1px solid var(--line); }
+.site-head .wrap { display:flex; align-items:center; gap:28px; height:58px; max-width:1560px; }
+.logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; letter-spacing:-.01em; text-decoration:none; white-space:nowrap; }
+.logo .mark { display:grid; place-items:center; width:30px; height:30px; border-radius:9px; color:#0b0c0f; font-weight:900;
+              background:linear-gradient(135deg,var(--acc2),var(--acc)); box-shadow:0 4px 14px rgba(255,122,26,.35); }
+.gnb { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; }
+.gnb::-webkit-scrollbar { display:none; }
+.gnb a { padding:8px 14px; border-radius:var(--rs); color:var(--tx2); text-decoration:none; font-weight:600; font-size:15px; white-space:nowrap; transition:color .15s, background .15s; }
+.gnb a:hover { color:var(--tx); background:var(--panel); }
+.gnb a.on { color:var(--acc2); background:var(--accdim); }
 
-  /* 광고 자리 (애드센스 승인 후 코드 삽입) */
-  .ad { position:sticky; top:78px; min-height:600px; border:1px dashed var(--line); border-radius:var(--r); display:grid; place-items:center; color:var(--tx3); font-size:12px; }
-  .adfix { position:fixed; left:0; right:0; bottom:0; z-index:70; height:64px; background:var(--plate); border-top:1px solid var(--line); display:grid; place-items:center; color:var(--tx3); font-size:12px; }
-  footer { border-top:1px solid var(--line); padding:24px 0 12px; color:var(--tx3); font-size:12px; line-height:1.8; }
+/* 광고 자리 (애드센스 승인 후 이 상자 안에 광고 코드를 넣는다)
+   .ad-rail  : 좌우 세로 광고 160x600  — 화면 폭 1360px 이상에서만 보인다
+   .ad-inline: 본문 사이 가로 광고 (반응형)
+   .adfix    : 하단 고정 띠 광고 728x90 / 모바일 320x50 */
+.ad-box { display:grid; place-items:center; color:var(--tx3); font-size:11px; letter-spacing:.08em;
+          border:1px dashed var(--line2); border-radius:var(--rs); background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(255,255,255,.012) 10px 20px); }
+.ad-rail { position:sticky; top:82px; width:160px; height:600px; }
+.ad-inline { width:100%; min-height:100px; margin:8px 0 24px; }
+.adfix { position:fixed; left:0; right:0; bottom:0; z-index:70; background:rgba(14,17,22,.94); backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:6px 0; }
+.adfix .ad-box { width:min(728px,calc(100% - 24px)); height:66px; margin:0 auto; }
+@media (max-width:640px) { .adfix .ad-box { height:50px; } body { padding-bottom:80px; } }
+
+footer { border-top:1px solid var(--line); padding:24px 0 12px; color:var(--tx3); font-size:12px; line-height:1.8; }
