@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>거상 여캐 이상형 월드컵 — 거상 백호 사랑방</title>
-<meta name="description" content="거상 여성 캐릭터 200여 명 중 랜덤 64명으로 진행하는 이상형 월드컵. 64강부터 결승까지.">
+<meta name="description" content="거상 여성 캐릭터 200여 명 중 랜덤 32명으로 진행하는 이상형 월드컵. 32강부터 결승까지.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="common.css">
 <style>
@@ -47,6 +47,20 @@
   .pick.win { transform:scale(1.03); border-color:var(--acc); box-shadow:0 0 0 3px var(--accdim), 0 30px 60px -24px rgba(255,122,26,.7); }
   .pick.win::before { opacity:1; }
   .pick.lose { opacity:.18; transform:scale(.95); }
+  .pick .adv { position:absolute; top:14px; left:50%; z-index:2; padding:6px 16px; font-size:15px; font-weight:900; white-space:nowrap; color:#160a02; border-radius:999px;
+               background:linear-gradient(135deg,var(--acc2),var(--acc)); box-shadow:0 8px 24px rgba(255,122,26,.55); transform:translate(-50%,-10px) scale(.6); opacity:0; }
+  .pick.win .adv { animation:badge .45s cubic-bezier(.2,1.5,.4,1) forwards; }
+  @keyframes badge { to { transform:translate(-50%,0) scale(1); opacity:1; } }
+
+  /* 라운드 사이 화면 */
+  .break { padding:44px 0 30px; text-align:center; }
+  .breakTitle { font-size:clamp(30px,6vw,52px); font-weight:900; letter-spacing:-.03em; animation:pop .5s cubic-bezier(.2,1.4,.4,1) both; }
+  .breakTitle b { background:linear-gradient(120deg,var(--acc2),var(--acc) 60%,#ff5a1a); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .breakSub { margin:4px 0 26px; color:var(--tx2); }
+  .breakFaces { display:grid; grid-template-columns:repeat(auto-fit,minmax(84px,1fr)); gap:12px; max-width:760px; margin:0 auto 30px; }
+  .breakFaces .f { animation:rise .35s ease both; }
+  .breakFaces img { width:100%; aspect-ratio:1; border-radius:14px; background:var(--panel2); border:1px solid var(--line2); pointer-events:none; }
+  .breakFaces span { display:block; margin-top:4px; font-size:12px; color:var(--tx2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .arena.lock .pick { pointer-events:none; }
   .arena.enter .pick { animation:rise .32s ease both; } .arena.enter .pick:nth-child(3) { animation-delay:.05s; }
   @keyframes rise { from { opacity:0; transform:translateY(14px); } }
@@ -76,6 +90,38 @@
   .podium .p span { color:var(--tx3); font-size:12px; margin-right:2px; }
 
   .legal { margin:48px 0 0; padding:16px 18px; font-size:12px; line-height:1.8; color:var(--tx3); background:var(--bg2); border:1px solid var(--line); border-radius:var(--rs); }
+  /* 누적 랭킹 */
+  .rank { margin:44px 0 0; text-align:left; }
+  .rank h2 { display:flex; align-items:baseline; gap:10px; margin:0 0 14px; font-size:18px; font-weight:800; }
+  .rank h2 small { font-size:13px; font-weight:500; color:var(--tx3); }
+  .tabs { display:inline-flex; gap:4px; padding:4px; margin-bottom:12px; background:var(--plate); border:1px solid var(--line); border-radius:12px; }
+  .tabs button { padding:7px 14px; font:inherit; font-size:13px; font-weight:700; color:var(--tx2); background:none; border:0; border-radius:9px; cursor:pointer; }
+  .tabs button.on { color:#160a02; background:linear-gradient(135deg,var(--acc2),var(--acc)); }
+  .rows { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  @media (max-width:720px) { .rows { grid-template-columns:1fr; } }
+  .rrow { display:flex; align-items:center; gap:12px; padding:8px 14px 8px 8px; background:var(--bg2); border:1px solid var(--line); border-radius:14px; }
+  .rrow .no { flex:none; width:26px; text-align:center; font-weight:900; color:var(--tx3); }
+  .rrow:nth-child(1) .no { color:#ffd25c; } .rrow:nth-child(2) .no { color:#cfd6e4; } .rrow:nth-child(3) .no { color:#e0955c; }
+  .rrow img { flex:none; width:46px; height:46px; border-radius:10px; background:var(--panel2); pointer-events:none; }
+  .rrow .nm2 { flex:1; min-width:0; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rrow .val { flex:none; text-align:right; font-size:13px; color:var(--tx2); } .rrow .val b { display:block; font-size:15px; color:var(--acc2); }
+  .rank .empty { padding:22px; text-align:center; font-size:14px; color:var(--tx3); background:var(--bg2); border:1px dashed var(--line2); border-radius:14px; }
+
+  .fix { display:block; margin:18px auto 0; padding:6px 12px; font:inherit; font-size:13px; color:var(--tx3); background:none; border:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+  .fix:hover { color:var(--acc2); }
+  .modal { position:fixed; inset:0; z-index:90; display:grid; place-items:center; padding:16px; background:rgba(5,6,8,.72); backdrop-filter:blur(4px); }
+  .sheet { width:min(100%,420px); padding:22px; background:var(--panel); border:1px solid var(--line2); border-radius:18px; box-shadow:0 40px 80px -20px #000; }
+  .sheet h3 { margin:0 0 4px; font-size:18px; } .sheet p { margin:0 0 16px; font-size:13px; color:var(--tx2); }
+  .who { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .who label, .kinds label { display:flex; align-items:center; gap:10px; padding:8px 10px; font-size:14px; background:var(--plate); border:1px solid var(--line); border-radius:12px; cursor:pointer; }
+  .who label:has(input:checked), .kinds label:has(input:checked) { border-color:var(--acc); background:var(--accdim); }
+  .who img { width:40px; height:40px; border-radius:8px; } .who input, .kinds input { accent-color:var(--acc); }
+  .who span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .kinds { display:grid; gap:6px; margin-bottom:12px; }
+  .sheet input[type=text] { width:100%; padding:11px 12px; margin-bottom:14px; font:inherit; color:var(--tx); background:var(--plate); border:1px solid var(--line2); border-radius:12px; outline:0; }
+  .sheet input[type=text]:focus { border-color:var(--acc); }
+  .sheet .row { display:flex; gap:8px; justify-content:flex-end; } .sheet .btn { height:44px; padding:0 20px; font-size:15px; }
+  .sheet .msg { min-height:20px; margin:0 0 10px; font-size:13px; color:var(--acc2); }
   [hidden] { display:none !important; }
 </style>
 </head>
@@ -97,7 +143,7 @@
   <section class="intro" id="intro">
     <div class="faces" id="faces"></div>
     <h1>거상 여캐 <em>이상형 월드컵</em></h1>
-    <p>여성 캐릭터 <b id="total">202</b>명 중 매번 다른 64명이 나옵니다. 64강부터 결승까지, 더 마음에 드는 쪽을 골라 주세요.</p>
+    <p>여성 캐릭터 <b id="total">200</b>여 명 중 매번 다른 32명이 나옵니다. 32강부터 결승까지, 더 마음에 드는 쪽을 골라 주세요.</p>
     <button class="btn pri" id="start" disabled>불러오는 중…</button>
   </section>
 
@@ -109,13 +155,22 @@
       <div class="bar"><i id="bar"></i></div>
     </div>
     <div class="arena" id="arena">
-      <button class="pick" id="left"><img alt="" draggable="false"><div class="nm"></div></button>
+      <button class="pick" id="left"><span class="adv"></span><img alt="" draggable="false"><div class="nm"></div></button>
       <div class="vs">VS</div>
-      <button class="pick" id="right"><img alt="" draggable="false"><div class="nm"></div></button>
+      <button class="pick" id="right"><span class="adv"></span><img alt="" draggable="false"><div class="nm"></div></button>
     </div>
+    <button class="fix" id="fixGame">이름이 틀렸거나 여캐가 아닌가요? 수정 제안하기</button>
   </section>
 
   <!-- 우승 -->
+  <!-- 라운드 사이 -->
+  <section class="break" id="break" hidden>
+    <div class="breakTitle" id="breakTitle"></div>
+    <div class="breakSub" id="breakSub"></div>
+    <div class="breakFaces" id="breakFaces"></div>
+    <button class="btn pri" id="breakGo"></button>
+  </section>
+
   <section class="champ" id="champ" hidden>
     <div class="crown">👑</div>
     <h2>나의 이상형 우승</h2>
@@ -126,6 +181,16 @@
       <button class="btn sec" id="save">결과 이미지 저장</button>
     </div>
     <div class="podium" id="podium"></div>
+    <button class="fix" id="fixChamp">우승자 이름이 틀렸나요? 수정 제안하기</button>
+  </section>
+
+  <section class="rank" id="rank" hidden>
+    <h2>역대 랭킹 <small id="rankGames"></small></h2>
+    <div class="tabs" id="rankTabs">
+      <button type="button" class="on" data-tab="by_title">우승 횟수</button>
+      <button type="button" data-tab="by_rate">승률</button>
+    </div>
+    <div class="rows" id="rankRows"></div>
   </section>
 
   <div class="legal">
@@ -134,21 +199,45 @@
   </div>
 </main>
 
+<div class="modal" id="modal" hidden>
+  <form class="sheet" id="fixForm">
+    <h3>수정 제안</h3>
+    <p>이름은 게임 데이터에서 자동으로 뽑아 틀린 게 있어요. 알려주시면 확인 후 고치겠습니다.</p>
+    <div class="who" id="fixWho"></div>
+    <div class="kinds">
+      <label><input type="radio" name="kind" value="name" checked>이름이 틀렸어요</label>
+      <label><input type="radio" name="kind" value="not_female">여캐가 아니에요</label>
+      <label><input type="radio" name="kind" value="other">기타</label>
+    </div>
+    <input type="text" id="fixText" maxlength="60" placeholder="올바른 이름" autocomplete="off">
+    <div class="msg" id="fixMsg"></div>
+    <div class="row">
+      <button type="button" class="btn sec" id="fixCancel">닫기</button>
+      <button class="btn pri" id="fixSend">보내기</button>
+    </div>
+  </form>
+</div>
+
 <footer style="margin-top:32px"><div class="wrap">거상 백호 사랑방은 천하제일상 거상의 팬 사이트이며 게임사와 무관합니다.</div></footer>
 
 <script>
 const $ = id => document.getElementById(id);
+const SIZE = 32;   // 한 판에 나오는 인원. 64로 바꾸면 64강이 된다
 const ROUND_NAMES = {64:"64강", 32:"32강", 16:"16강", 8:"8강", 4:"4강", 2:"결승"};
 const src = c => "portraits/" + c.file;
-let ALL = [], players = [], winners = [], matchNo = 0, semis = [], finalLoser = null, busy = false;
+let ALL = [], players = [], winners = [], matchNo = 0, semis = [], finalLoser = null, busy = false, record = [];
 
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-function show(id) { for (const s of ["intro", "game", "champ"]) $(s).hidden = s !== id; window.scrollTo({top:0}); }
+function show(id) {
+  for (const s of ["intro", "game", "break", "champ"]) $(s).hidden = s !== id;
+  $("rank").hidden = !RANK || id === "game" || id === "break";   // 대결 중에는 랭킹을 숨겨 화면을 단순하게
+  window.scrollTo({top:0});
+}
 function preload(list) { list.forEach(c => { if (c) new Image().src = src(c); }); }
 
 function startGame() {
-  players = shuffle([...ALL]).slice(0, 64);   // 매 판마다 208명 중 랜덤 64명
-  winners = []; matchNo = 0; semis = []; finalLoser = null;
+  players = shuffle([...ALL]).slice(0, SIZE);   // 매 판마다 전체 중 랜덤으로 뽑는다
+  winners = []; matchNo = 0; semis = []; finalLoser = null; record = [];
   show("game"); draw();
 }
 
@@ -156,9 +245,9 @@ function draw() {
   const size = players.length, total = size / 2;
   const a = players[matchNo * 2], b = players[matchNo * 2 + 1];
   $("round").innerHTML = size === 2 ? "<b>결승</b>" : `<b>${ROUND_NAMES[size]}</b> ${matchNo + 1}/${total}`;
-  // 전체 63경기 중 몇 경기를 치렀는지
-  const played = (64 - size) + matchNo;
-  $("bar").style.width = (played / 63 * 100) + "%";
+  // 전체 경기(SIZE-1) 중 몇 경기를 치렀는지
+  const played = (SIZE - size) + matchNo;
+  $("bar").style.width = (played / (SIZE - 1) * 100) + "%";
   for (const [el, c] of [[$("left"), a], [$("right"), b]]) {
     el.className = "pick";
     el.querySelector("img").src = src(c);
@@ -179,15 +268,34 @@ function choose(side) {
   $("arena").classList.add("lock");
   $(side).classList.add("win");
   $(side === "left" ? "right" : "left").classList.add("lose");
-  if (players.length === 4) semis.push(lose);
-  if (players.length === 2) finalLoser = lose;
+  // 고른 카드에 '16강 진출!' 배지
+  const size = players.length;
+  $(side).querySelector(".adv").textContent = size === 2 ? "우승!" : (size === 4 ? "결승" : ROUND_NAMES[size / 2]) + " 진출!";
+  if (size === 4) semis.push(lose);
+  if (size === 2) finalLoser = lose;
   winners.push(win);
+  record.push([win.id, lose.id]);
   setTimeout(() => {
     matchNo++;
-    if (matchNo * 2 >= players.length) { players = winners; winners = []; matchNo = 0; }
-    if (players.length === 1) finish(players[0]); else draw();
-  }, 520);
+    if (matchNo * 2 < players.length) { draw(); return; }
+    // 한 라운드가 끝났다
+    players = winners; winners = []; matchNo = 0;
+    if (players.length === 1) finish(players[0]); else roundBreak();
+  }, 760);
 }
+
+// 라운드 사이: 진출자를 모아 보여준다
+function roundBreak() {
+  const next = players.length === 2 ? "결승" : ROUND_NAMES[players.length];
+  $("breakTitle").innerHTML = `<b>${next}</b> 진출!`;
+  $("breakSub").textContent = players.length === 2 ? "마지막 한 판이 남았어요" : `${players.length}명이 ${next}에 올랐어요`;
+  $("breakFaces").innerHTML = players.map((c, i) =>
+    `<div class="f" style="animation-delay:${i * 35}ms"><img src="${src(c)}" alt=""><span>${c.name.replace(/[&<>]/g, "")}</span></div>`).join("");
+  $("breakGo").textContent = next + " 시작";
+  show("break");
+  $("breakGo").focus();
+}
+function nextRound() { show("game"); draw(); }
 
 function finish(champ) {
   $("champName").textContent = champ.name;
@@ -196,6 +304,9 @@ function finish(champ) {
   $("podium").innerHTML = (finalLoser ? row("준우승", finalLoser) : "") + semis.map(c => row("4강", c)).join("");
   $("save").dataset.id = champ.id;
   show("champ");
+  // 누적 랭킹에 이번 판 결과를 보탠다 (서버가 쉬고 있으면 그냥 넘어간다)
+  fetch(API_BASE + "/api/worldcup/result", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({matches: record})})
+    .then(loadRank).catch(() => {});
 }
 
 // 결과 카드 한 장을 그려서 저장한다 (원본 이미지를 그대로 내려받게 하지는 않는다)
@@ -218,20 +329,79 @@ function saveCard() {
   a.download = "거상_이상형월드컵_" + champ.name + ".png"; a.href = cv.toDataURL("image/png"); a.click();
 }
 
+// 수정 제안: 답변 서버(ai.dabangzz.com)에 저장된다
+const API_BASE = /(^|\.)dabangzz\.com$/.test(location.hostname) ? "https://ai.dabangzz.com" : "";
+function openFix(cands) {
+  $("fixWho").innerHTML = cands.map((c, i) =>
+    `<label><input type="radio" name="who" value="${c.id}" ${i === 0 ? "checked" : ""}><img src="${src(c)}" alt=""><span>${c.name.replace(/[&<>]/g, "")}</span></label>`).join("");
+  $("fixWho").style.gridTemplateColumns = cands.length === 1 ? "1fr" : "1fr 1fr";
+  $("fixText").value = ""; $("fixMsg").textContent = ""; $("fixSend").disabled = false;
+  $("modal").hidden = false; $("fixText").focus();
+}
+function closeFix() { $("modal").hidden = true; }
+$("fixGame").addEventListener("click", () => openFix([players[matchNo * 2], players[matchNo * 2 + 1]]));
+$("fixChamp").addEventListener("click", () => openFix([ALL.find(c => c.id === $("save").dataset.id)]));
+$("fixCancel").addEventListener("click", closeFix);
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) closeFix(); });
+$("fixForm").addEventListener("change", () => {
+  const kind = new FormData($("fixForm")).get("kind");
+  $("fixText").placeholder = kind === "name" ? "올바른 이름" : "덧붙일 말 (선택)";
+});
+$("fixForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = new FormData($("fixForm")), kind = f.get("kind"), suggestion = $("fixText").value.trim();
+  if (kind === "name" && !suggestion) { $("fixMsg").textContent = "올바른 이름을 적어 주세요."; return; }
+  $("fixSend").disabled = true; $("fixMsg").textContent = "보내는 중…";
+  try {
+    const r = await (await fetch(API_BASE + "/api/worldcup/report", {method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id:f.get("who"), kind, suggestion})})).json();
+    $("fixMsg").textContent = r.error || "고맙습니다! 확인 후 반영할게요.";
+    if (!r.error) setTimeout(closeFix, 1100); else $("fixSend").disabled = false;
+  } catch { $("fixMsg").textContent = "지금은 접수 서버가 쉬고 있어요. 나중에 다시 시도해 주세요."; $("fixSend").disabled = false; }
+});
+
+let RANK = null, rankTab = "by_title";
+function drawRank() {
+  if (!RANK) return;
+  $("rank").hidden = false;
+  $("rankGames").textContent = `지금까지 ${RANK.games.toLocaleString()}판 진행`;
+  const list = RANK[rankTab];
+  const val = r => rankTab === "by_title"
+    ? `<b>우승 ${r.titles}회</b>결승 ${r.finals}회 · 승률 ${r.rate}%`
+    : `<b>승률 ${r.rate}%</b>${r.wins}승 ${r.played - r.wins}패`;
+  $("rankRows").innerHTML = list.length
+    ? list.map((r, i) => `<div class="rrow"><span class="no">${i + 1}</span><img src="portraits/${r.id}.webp" alt=""><span class="nm2">${r.name.replace(/[&<>]/g, "")}</span><span class="val">${val(r)}</span></div>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">${rankTab === "by_title" ? "아직 기록이 없어요. 첫 우승자를 만들어 주세요!" : `승률 순위는 ${RANK.min_played}번 이상 나온 캐릭터부터 집계돼요.`}</div>`;
+}
+function loadRank() {
+  return fetch(API_BASE + "/api/worldcup/ranking").then(r => r.json()).then(d => { RANK = d; drawRank(); }).catch(() => {});
+}
+$("rankTabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  rankTab = b.dataset.tab;
+  for (const x of $("rankTabs").children) x.classList.toggle("on", x === b);
+  drawRank();
+});
+
 $("left").addEventListener("click", () => choose("left"));
 $("right").addEventListener("click", () => choose("right"));
 $("start").addEventListener("click", startGame);
 $("again").addEventListener("click", startGame);
+$("breakGo").addEventListener("click", nextRound);
 $("save").addEventListener("click", saveCard);
-document.addEventListener("keydown", e => { if (e.key === "ArrowLeft") choose("left"); if (e.key === "ArrowRight") choose("right"); });
+document.addEventListener("keydown", e => {
+  if (!$("modal").hidden) { if (e.key === "Escape") closeFix(); return; }   // 제안 창이 열려 있으면 대결은 멈춘다
+  if (e.key === "ArrowLeft") choose("left"); if (e.key === "ArrowRight") choose("right");
+});
 document.addEventListener("contextmenu", e => { if (e.target.tagName === "IMG") e.preventDefault(); });
 
 fetch("portraits/manifest.json").then(r => r.json()).then(list => {
   ALL = list;
-  $("total").textContent = list.length;
+  $("total").textContent = Math.floor(list.length / 10) * 10;
   $("faces").innerHTML = shuffle([...list]).slice(0, 5).map(c => `<img src="${src(c)}" alt="">`).join("");
-  const b = $("start"); b.disabled = false; b.textContent = "64강 시작하기";
+  const b = $("start"); b.disabled = false; b.textContent = ROUND_NAMES[SIZE] + " 시작하기";
 }).catch(() => { $("start").textContent = "목록을 불러오지 못했습니다"; });
+loadRank();
 </script>
 </body>
 </html>
